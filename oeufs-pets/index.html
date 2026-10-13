@@ -50,12 +50,12 @@ const P="Chenille,S,95,0,0,2;Coccinelle,I,0,0,0,1;Abeille,I,48,0,0,10;Lapin,Q,30
 const ZN="Prairie|Forêt|Océan|Désert|Neige|Volcan|Ciel|Espace|Cristal|Cosmos".split("|"),H=[110,150,200,40,190,8,215,265,300,335];
 const RN="Commun|Commun|Peu commun|Peu commun|Rare|Rare|Épique|Épique|Légendaire|Mythique".split("|"),RC="#b9c0cc,#b9c0cc,#6fe08a,#6fe08a,#4aa8ff,#4aa8ff,#c06bff,#c06bff,#ffb020,#ff4f86".split(","),WT=[26.7,20,18,15,10,6,3,1,.2,.1];
 const fmt=n=>{if(n<1e3)return Math.floor(n)+"";const x=Math.floor(Math.log10(n)/3),v=n/10**(3*x);return v.toFixed(v<10?2:1)+(["","K","M","B","T","Qa","Qi","Sx","Sp","Oc","No","Dc"][x]||"e"+x*3)};
-let S={m:0,z:1,pr:0,pw:0,au:0,gd:0,o:{},s:{},eq:null,auto:1,v:{e:.8,p:.8,a:.6},mo:{},admin:0};
+let S={m:0,z:1,pr:0,pw:0,au:0,gd:0,lk:0,o:{},s:{},eq:null,auto:1,v:{e:.8,p:.8,a:.6},mo:{},admin:0};
 try{Object.assign(S,JSON.parse(localStorage.getItem("oeufsPets2")||"{}"))}catch(e){}
 const save=()=>{try{localStorage.setItem("oeufsPets2",JSON.stringify(S))}catch(e){}};
 const need=()=>10**S.z,pwr=()=>on("pw")?Math.floor(1.5**S.pw):1,gm=()=>on("gd")?1+.25*S.gd:1,reward=()=>need()**.85*gm()*petMul();
 const disc=id=>(S.o[id]||0)+(S.s[id]||0)>0,zc=z=>{let c=0;for(let i=0;i<10;i++)c+=disc((z-1)*10+i)?1:0;return c},unl=z=>z==1||S.admin||zc(z-1)>=5;
-const cost=t=>t=="pw"?25*1.75**S.pw:t=="au"?60*1.9**S.au:300*2.6**S.gd;
+const cost=t=>t=="pw"?25*1.75**S.pw:t=="au"?60*1.9**S.au:t=="lk"?1500*2.2**(S.lk||0):300*2.6**S.gd;
 /* ART */
 let U=0;
 function artOld(id){const[n,K,h,e,t,x]=P[id],u="g"+U++,c=`hsl(${h} 58% 54%)`,d=`hsl(${h} 58% 32%)`,l=`hsl(${h} 70% 84%)`,F=`url(#${u})`,O='stroke="#0007" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"';
@@ -129,7 +129,8 @@ function petSnd(id,sh){const[,K]=P[id],s=(id+7)*2654435761>>>0,m=sh?1.5:1,j=s%10
  else if(K=="S"){nz(.6,6500,.32,"bandpass");tone(900*m,.5,"sine",.04,.5,.05)}
  else{tone((60+j/3)*m,.8,"sawtooth",.35,.5,0,500);nz(.7,320,.4,"lowpass")}
  if(sh)tone(2200,.3,"sine",.08,1.2,.2)}
-const MAXL={pw:60,au:30,gd:30},PE=[0,2,4,7,9];
+const lmAt=l=>1+9*(l/20)**1.7,sb=()=>zc(S.z)==10?.001:.0001,lkm=()=>on("lk")?lmAt(S.lk||0):1;
+const MAXL={pw:60,au:30,gd:30,lk:20},PE=[0,2,4,7,9];
 const petMul=()=>S.eq?(S.eq.sh?2.5+(S.eq.id+1)*.02:1+(S.eq.id+1)*.01):1;
 let lt2=0;
 function crack(p){const t=performance.now();if(t-lt2<45)return;lt2=t;CUR="e";const f=420+S.z*55+p*520;nz(.022,4200,.14,"highpass");nz(.1,f*1.7,.2,"bandpass");for(let k=1;k<4;k++)nz(.025,f*(1+k*.4)+Math.random()*500,.09,"bandpass",k*.028);tone(125+p*95,.17,"sine",.34,.5);tone(f*2.1,.1,"triangle",.045,.7,.012)}
@@ -157,7 +158,7 @@ if(K=="S"){md+=`<ellipse cx="50" cy="84" rx="36" ry="14" ${fl}/><ellipse cx="50"
 tp=`<ellipse cx="50" cy="42" rx="${HX}" ry="${HY}" ${fl}/>`+(x&2?`<path d="M42 20 V29 M50 17 V28 M58 20 V29" stroke="${d}" stroke-width="3.4" stroke-linecap="round" opacity=".6"/>`:"")+(x&1?dots([[36,28],[64,30],[50,22]],3):"")+eye(EW,44,ES)+eye(100-EW,44,ES)+`<ellipse cx="29" cy="54" rx="5" ry="3" fill="#ff7a9a" opacity=".5"/><ellipse cx="71" cy="54" rx="5" ry="3" fill="#ff7a9a" opacity=".5"/>`;
 if(K=="B")tp+=`<path d="M42 50 Q50 46 58 50 L50 63Z" fill="#ffb020" ${O2}/>`+(x&32?`<path d="M38 18 Q34 2 44 10 Q46 -2 52 8 Q60 0 60 16Z" ${dk}/>`:"");else if(K=="S")tp+=`<path d="M44 57 Q50 61 56 57" stroke="#1b1230" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M50 60 V68 M50 68 l-3 4 M50 68 l3 4" stroke="#e03050" stroke-width="2.2" fill="none" stroke-linecap="round"/>`;else if(K=="I")tp+=`<path d="M44 56 Q50 61 56 56" stroke="#1b1230" stroke-width="1.8" fill="none" stroke-linecap="round"/>`;else{const D=K=="D";tp+=`<ellipse cx="50" cy="${D?56:55}" rx="${D?14:11}" ry="${D?9:8}" fill="${l}" ${O2}/>`+(D?`<circle cx="45" cy="54" r="1.8" fill="#1b1230"/><circle cx="55" cy="54" r="1.8" fill="#1b1230"/>`:`<ellipse cx="50" cy="52" rx="3.6" ry="2.6" fill="#1b1230"/>`)+`<path d="M44 59 Q50 63 56 59" stroke="#1b1230" stroke-width="1.8" fill="none" stroke-linecap="round"/>`;if(D)tp+=`<path d="M30 24 L22 2 L42 18Z" ${gold}/><path d="M70 24 L78 2 L58 18Z" ${gold}/>`;else if(x&4)tp+=`<path d="M43 20 L50 -6 L57 20Z" ${gold}/>`}}
 return `<svg viewBox="0 0 100 100"><defs><radialGradient id="${u}" cx=".35" cy=".25" r=".9"><stop offset="0" stop-color="${l}"/><stop offset=".45" stop-color="${c}"/><stop offset="1" stop-color="${d}"/></radialGradient>${FILT.replace("ID",u+"f")}</defs><ellipse cx="50" cy="96" rx="34" ry="4" fill="#0005"/><g filter="url(#${u}f)">${bk}${md}${tp}${dc(n,l,K)}</g></svg>`}
-function resetAll(){lbDel();try{localStorage.removeItem("oeufsPets2")}catch(e){}for(const k in S)delete S[k];Object.assign(S,{m:0,z:1,pr:0,pw:0,au:0,gd:0,o:{},s:{},eq:null,auto:1,v:{e:.8,p:.8,a:.6},mo:{},admin:0});acc=0;$("#egg").innerHTML=eggSvg(0);zr();petr();applyV();ambient();ui();save();setR();askName()}
+function resetAll(){lbDel();try{localStorage.removeItem("oeufsPets2")}catch(e){}for(const k in S)delete S[k];Object.assign(S,{m:0,z:1,pr:0,pw:0,au:0,gd:0,lk:0,o:{},s:{},eq:null,auto:1,v:{e:.8,p:.8,a:.6},mo:{},admin:0});acc=0;$("#egg").innerHTML=eggSvg(0);zr();petr();applyV();ambient();ui();save();setR();askName()}
 if(S.admin){for(let i=0;i<100;i++){S.o[i]=S.o[i]||1;S.s[i]=S.s[i]||1}}
 const rnd=Math.random;let lt3=0,lo2=0;
 const SH=[[2800,.14,0,0,6],[1500,.12,330,.1,4],[1100,.16,520,.07,5],[1900,.18,0,0,12],[3600,.12,1800,.05,6],[800,.2,110,.2,5],[3200,.1,0,0,3],[2400,.12,1300,.06,4],[3000,.14,2093,.06,5],[2600,.14,1568,.05,8]];
@@ -227,7 +228,7 @@ function hit(n,x,y,man){S.pr=Math.min(need(),S.pr+n);const p=S.pr/need();
  if(man){crack(p);$("#egg").animate([{transform:"scale(1)"},{transform:`scale(.93,1.06) rotate(${Math.random()*6-3}deg)`},{transform:"scale(1)"}],{duration:120});fx(x,y,"+"+fmt(n),"#fff",15);fx(x,y,"◆","hsl("+H[S.z-1]+" 70% 82%)",9);fx(x,y,"◆","hsl("+H[S.z-1]+" 70% 45%)",7);fx(x,y,"✦","hsl("+H[S.z-1]+" 90% 72%)",12)}else if(Math.random()<.2)crack(p);tryOpen()}
 function roll(){let r=Math.random()*100,i=0;while(i<9&&r>WT[i]){r-=WT[i];i++}return i}
 function tryOpen(){const t=performance.now();if(S.pr<need()||t-lo<250)return;lo=t;S.pr=0;
- const z=S.z-1,i=roll(),id=z*10+i,sh=Math.random()<(zc(S.z)==10?.001:.0001),nw=sh?!S.s[id]:!disc(id);(sh?S.s:S.o)[id]=((sh?S.s:S.o)[id]||0)+1;S.m+=reward();S.op=(S.op||0)+1;
+ const z=S.z-1,i=roll(),id=z*10+i,sh=Math.random()<sb()*lkm(),nw=sh?!S.s[id]:!disc(id);(sh?S.s:S.o)[id]=((sh?S.s:S.o)[id]||0)+1;S.m+=reward();S.op=(S.op||0)+1;
  const tr=i>>1,[cx,cy]=ec();openSnd(tr,sh);if(i>5||sh||nw)petSnd(id,sh);shake(3+tr*2);
  $("#egg").animate([{filter:"brightness(1)",transform:"scale(1)"},{filter:"brightness(3)",transform:"scale(1.2)"},{filter:"brightness(1)",transform:"scale(1)"}],{duration:300});
  for(let q=0;q<10+tr*7;q++)fx(cx,cy,["✦","●","✧"][q%3],sh?"#ffd54a":RC[i],12+Math.random()*14);
@@ -241,7 +242,7 @@ function setZone(z){S.z=z;S.pr=0;$("#egg").innerHTML=eggSvg(z-1);zr();tone(300,.
 /* SHEET */
 let itab=0;
 function sheetR(){if(!tab)return;let h="";if(tab=="s")return setR();if(tab=="l")return lbR();
- if(tab=="u"){$("#st").textContent="⬆️ Améliorations";h=[["pw","👆 Puissance de clic","+"+fmt(pwr())+" → +"+fmt(Math.floor(1.5**(S.pw+1)))+" par clic"],["au","🤖 Clic automatique",fmt(S.au*pwr())+" → "+fmt((S.au+1)*pwr())+" clics/s"],["gd","💰 Or par œuf","x"+gm().toFixed(2)+" → x"+(gm()+.25).toFixed(2)]].map(([t,n,d])=>`<div class="up"><div><b>${n}</b> <span class="mu">niv. ${S[t]}</span><br><span class="mu">${on(t)?d:"désactivée"}</span></div><button class="tb" data-o="${t}">${on(t)?"✅":"⛔"}</button><button data-t="${t}" ${S.m<cost(t)||S[t]>=MAXL[t]?"disabled":""}>${S[t]>=MAXL[t]?"MAX":fmt(cost(t))+" 🪙"}</button></div>`).join("")+`<p class="mu">Vitesse maximale : 1 œuf toutes les 0,25 s.</p>`}
+ if(tab=="u"){$("#st").textContent="⬆️ Améliorations";h=[["pw","👆 Puissance de clic","+"+fmt(pwr())+" → +"+fmt(Math.floor(1.5**(S.pw+1)))+" par clic"],["au","🤖 Clic automatique",fmt(S.au*pwr())+" → "+fmt((S.au+1)*pwr())+" clics/s"],["gd","💰 Or par œuf","x"+gm().toFixed(2)+" → x"+(gm()+.25).toFixed(2)],["lk","🍀 Chance (shiny)",S.lk>=MAXL.lk?"x"+lkm().toFixed(2)+" · shiny 1/"+fmt(Math.round(1/(sb()*lkm())))+" (max)":"x"+lkm().toFixed(2)+" → x"+lmAt((S.lk||0)+1).toFixed(2)+" · shiny 1/"+fmt(Math.round(1/(sb()*lkm())))+" → 1/"+fmt(Math.round(1/(sb()*lmAt((S.lk||0)+1))))]].map(([t,n,d])=>`<div class="up"><div><b>${n}</b> <span class="mu">niv. ${S[t]}</span><br><span class="mu">${on(t)?d:"désactivée"}</span></div><button class="tb" data-o="${t}">${on(t)?"✅":"⛔"}</button><button data-t="${t}" ${S.m<cost(t)||S[t]>=MAXL[t]?"disabled":""}>${S[t]>=MAXL[t]?"MAX":fmt(cost(t))+" 🪙"}</button></div>`).join("")+`<p class="mu">Vitesse maximale : 1 œuf toutes les 0,25 s. Chance au niveau max : x10 sur les shiny.</p>`}
  if(tab=="z"){$("#st").textContent="🗺️ Zones";for(let z=1;z<=10;z++){const u=unl(z);h+=`<div class="zc ${S.z==z?"on":""} ${u?"":"lk"}" data-z="${z}" style="--h:${H[z-1]}">${eggSvg(z-1).replace(/id="(e|k)(\d)/g,'id="$1m$2').replace(/#(e|k)(\d)/g,"#$1m$2").replace(/id="cr"/,"")}<div><b>${u?"":"🔒 "}${z}. ${ZN[z-1]}</b><br><span class="mu">${u?zc(z)+"/10 pets · "+fmt(10**z)+" clics/œuf":"Il faut 5/10 pets en "+ZN[z-2]+" ("+zc(z-1)+"/5)"}</span></div></div>`}}
  if(tab=="i"){$("#st").textContent="📖 Index";h=`<div style="display:flex;gap:8px;margin-bottom:6px;flex-wrap:wrap"><button class="tb ${itab?"":"on"}" data-i="0">Normal</button><button class="tb ${itab?"on":""}" data-i="1">✨ Shiny</button><button class="tb ${S.auto?"on":""}" data-i="a">🤖 Auto-meilleur</button></div>`;let tot=0;
  for(let z=0;z<10;z++){h+=`<div class="zt" style="color:hsl(${H[z]} 80% 72%)">${z+1}. ${ZN[z]}${zc(z+1)==10&&!itab?" ⚡ shiny 1/1000":""}</div><div class="gr">`;for(let i=0;i<10;i++){const id=z*10+i,n=(itab?S.s:S.o)[id]||0;tot+=n?1:0;const q=S.eq&&S.eq.id==id&&S.eq.sh==itab;h+=n?`<div class="cd ${itab?"sh":""} ${q?"eq":""}" style="--c:${itab?"#ffd54a":RC[i]}" data-id="${id}"><i>x${n}</i>${art(id,itab)}<small>${P[id][0]}</small><em>${rar(i,z)}</em></div>`:`<div class="cd q">?<em>${rar(i,z)}</em></div>`}h+="</div>"}
@@ -251,7 +252,7 @@ function open(t){tab=t;$("#sheet").classList.add("o");sheetR();tone(500,.1,"sine
 document.querySelectorAll("#dock [data-t]").forEach(b=>b.onclick=()=>tab==b.dataset.t?cl():open(b.dataset.t));
 function cl(){tab="";$("#sheet").classList.remove("o")}$("#x").onclick=cl;
 $("#sc").onclick=e=>{const b=e.target.closest("[data-t],[data-z],[data-i],[data-id],[data-m],[data-ad],[data-rs],[data-o],[data-lb]");if(!b)return;const d=b.dataset;
- if(d.lb){lbSend()}else if(d.o){S.off=S.off||{};S.off[d.o]=!S.off[d.o];save();sheetR();ui()}else if(d.rs){if(rsc){rsc=0;resetAll()}else{rsc=1;b.textContent="⚠️ Confirmer ?";setTimeout(()=>{rsc=0;if(b.isConnected)b.textContent="🗑️ Reset"},3000)}}else if(d.m){S.mo[d.m]=!S.mo[d.m];applyV();setR()}else if(d.ad){if($("#pw").value=="admin"){S.gone=0;lbDel();S.admin=1;for(let i=0;i<100;i++){S.o[i]=S.o[i]||1;S.s[i]=S.s[i]||1}if(S.auto)autoEq();S.pw=MAXL.pw;S.au=MAXL.au;S.gd=MAXL.gd;CUR="e";tone(660,.3,"sine",.12,1.5);tone(990,.4,"sine",.1,1.5,.12);save();zr();ui();setR()}else $("#pw").style.outline="2px solid #f55"}else if(d.t)buy(d.t);else if(d.z){if(unl(+d.z)){setZone(+d.z);sheetR()}else tone(150,.2,"square",.1,.7)}
+ if(d.lb){lbSend()}else if(d.o){S.off=S.off||{};S.off[d.o]=!S.off[d.o];save();sheetR();ui()}else if(d.rs){if(rsc){rsc=0;resetAll()}else{rsc=1;b.textContent="⚠️ Confirmer ?";setTimeout(()=>{rsc=0;if(b.isConnected)b.textContent="🗑️ Reset"},3000)}}else if(d.m){S.mo[d.m]=!S.mo[d.m];applyV();setR()}else if(d.ad){if($("#pw").value=="admin"){S.gone=0;lbDel();S.admin=1;for(let i=0;i<100;i++){S.o[i]=S.o[i]||1;S.s[i]=S.s[i]||1}if(S.auto)autoEq();S.pw=MAXL.pw;S.au=MAXL.au;S.gd=MAXL.gd;S.lk=MAXL.lk;CUR="e";tone(660,.3,"sine",.12,1.5);tone(990,.4,"sine",.1,1.5,.12);save();zr();ui();setR()}else $("#pw").style.outline="2px solid #f55"}else if(d.t)buy(d.t);else if(d.z){if(unl(+d.z)){setZone(+d.z);sheetR()}else tone(150,.2,"square",.1,.7)}
  else if(d.i){if(d.i=="a"){S.auto=1;autoEq()}else itab=+d.i;sheetR()}
  else if(d.id){S.eq={id:+d.id,sh:itab};S.auto=0;petSnd(S.eq.id,itab);petr();sheetR();save()}};
 /* PET */
